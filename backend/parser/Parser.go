@@ -280,7 +280,7 @@ func parseCreate(tokenizer *Tokenizer) (*statement.CreateStatement, error) {
 }
 
 // parseCommit 解析commit语句
-func parseCommit(tokenizer *Tokenizer) (*statement.CommitStatement, error) {、
+func parseCommit(tokenizer *Tokenizer) (*statement.CommitStatement, error) {
 	// commit语句后不应该有任何其他的标记了
 	tmp, err := tokenizer.Peek()
 	if err != nil {

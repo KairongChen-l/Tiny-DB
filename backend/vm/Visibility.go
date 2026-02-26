@@ -14,7 +14,7 @@ func IsVersionSkip(tm *tm.TransactionManagerImpl, t *Transaction, e *Entry) bool
 
 // IsVisible 判断记录e是否对事务t可见
 func IsVisible(tm *tm.TransactionManagerImpl, t *Transaction, e *Entry) bool {
-	// 如果是可重复读级别
+	// Level == 0 对应读已提交(RC)隔离级别，Level != 0 对应可重复读(RR)隔离级别
 	if t.Level == 0 {
 		return readCommitted(tm, t, e)
 	} else {
@@ -77,7 +77,7 @@ func repeatableRead(tm *tm.TransactionManagerImpl, t *Transaction, e *Entry) boo
 			return true
 		}
 		// 如果条目的删除版本号不等于事务的ID
-		if XMin != xid {
+		if XMax != xid {
 			// 如果条目的删除版本未提交，或者删除版本号大于事务的ID，或者删除版本号在事务的快照中，则返回true
 			if !tm.IsCommitted(XMax) || XMax > xid || t.IsInSnapShot(XMax) {
 				return true

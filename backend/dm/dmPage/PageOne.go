@@ -52,12 +52,13 @@ func CheckPageOneValid(page *Page) bool {
 	return CheckPageOneDataValid(page.GetData())
 }
 
-// CheckPageOneDataValid 校验数据
+// CheckPageOneDataValid 校验数据：比较前后两段校验字节是否一致
+// 如果一致，说明数据库上次是正常关闭的，返回true；否则返回false，需要进行崩溃恢复
 func CheckPageOneDataValid(data []byte) bool {
 	for i := 0; i < PageOneLengthValidCheck; i++ {
 		if data[PageOneOffsetValidCheck+i] != data[PageOneOffsetValidCheck+PageOneLengthValidCheck+i] {
 			return false
 		}
 	}
-	return false
+	return true
 }
