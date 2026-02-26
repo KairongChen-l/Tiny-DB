@@ -93,7 +93,7 @@ func (cache *AbstractCache[T]) Get(key int64) (T, error) {
 	return obj, nil
 }
 
-// Release 强行释放资源
+// Release 释放资源，当引用计数降为0时，从缓存中移除并回写
 func (cache *AbstractCache[T]) Release(key int64) {
 
 	cache.lock.Lock()
@@ -103,22 +103,19 @@ func (cache *AbstractCache[T]) Release(key int64) {
 	if !ok {
 		// 该资源不存在
 		panic("资源不存在")
-		return
 	}
 	ref -= 1
 	if ref <= 0 {
-		// 释放资源
-		obj, err := cache.Get(key)
-		if err != nil {
-			// 释放资源失败
-			return
-		}
-		// 处理资源的释放
+		// 引用计数归零，从缓存中取出资源并释放
+		obj := cache.cache[key]
+		// 处理资源的释放（如刷盘等）
 		cache.iAbstractCache.ReleaseForCache(obj)
 		// 从引用计数中移除该资源
 		delete(cache.references, key)
 		// 从缓存中移除该资源
 		delete(cache.cache, key)
+		// 从getting中移除该资源
+		delete(cache.getting, key)
 		// 缓存中的资源数减一
 		cache.count--
 		return

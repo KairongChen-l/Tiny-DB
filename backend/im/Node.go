@@ -17,10 +17,10 @@ import (
  */
 
 var (
-	// IsLeftOffset 是否是叶子节点
-	IsLeftOffset = 0
+	// IsLeafOffset 是否是叶子节点的标志位偏移量
+	IsLeafOffset = 0
 	// NumberKeysOffset 关键字个数的偏移位置
-	NumberKeysOffset = IsLeftOffset + 1
+	NumberKeysOffset = IsLeafOffset + 1
 	// SiblingOffset 兄弟节点的偏移位置
 	SiblingOffset = NumberKeysOffset + 2
 	// NodeHeaderSize 节点头部大小
@@ -44,15 +44,15 @@ type Node struct {
 // SetRawIsLeaf 设置是否为叶子节点，1表示是叶子节点，0表示非叶子节点
 func SetRawIsLeaf(raw []byte, isLeaf bool) {
 	if isLeaf {
-		raw[IsLeftOffset] = 1
+		raw[IsLeafOffset] = 1
 	} else {
-		raw[IsLeftOffset] = 0
+		raw[IsLeafOffset] = 0
 	}
 }
 
 // GetRawIsLeaf 判断是否是叶子节点
 func GetRawIsLeaf(raw []byte) bool {
-	return raw[IsLeftOffset] == 1
+	return raw[IsLeafOffset] == 1
 }
 
 // SetRawNumberKeys 设置节点个数
